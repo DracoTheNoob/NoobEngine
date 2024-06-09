@@ -47,6 +47,7 @@ public class Scene implements Cycle {
 
     public void addSprite(Sprite sprite) {
         this.sprites.add(sprite);
+        sprite.onSpriteAdded();
         this.spritesToInitialize.add(sprite.getId());
     }
 
@@ -55,6 +56,7 @@ public class Scene implements Cycle {
             if(sprite.getId() == spriteId) {
                 sprite.close();
                 this.sprites.remove(sprite);
+                sprite.onSpriteRemoved();
                 break;
             }
         }

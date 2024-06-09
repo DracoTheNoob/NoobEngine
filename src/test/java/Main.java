@@ -8,7 +8,7 @@ public class Main {
         Engine engine = new Engine();
         Scene scene = new Scene(engine);
 
-        scene.addSprite(new Sprite(engine, scene, new Vector(50, 50), "debug.png"));
+        scene.addSprite(new Sprite(engine, scene, new Vector(0, 0), new Vector(1, 1), "debug.png"));
 
         engine.setScene(scene);
         engine.run();

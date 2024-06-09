@@ -66,7 +66,14 @@ public class Panel extends JPanel implements Cycle {
         g.fillRect(0, 0, width, height);
 
         for(Sprite sprite : this.engine.getCurrentScene().getSprites()) {
-            g.drawImage(textures.get(sprite.getTexture()), (int) sprite.getLocation().getX(), (int) sprite.getLocation().getY(), null);
+            BufferedImage image = textures.get(sprite.getTexture());
+
+            int w = (int)(image.getWidth() * sprite.getScale().getX());
+            int h = (int)(image.getHeight() * sprite.getScale().getY());
+            int x = resolution.width/2 + (int)(sprite.getLocation().getX() - w/2);
+            int y = resolution.height/2 - (int)(sprite.getLocation().getY() + h/2);
+
+            g.drawImage(image, x, y, w, h, null);
         }
 
         width = getWidth();
@@ -121,4 +128,6 @@ public class Panel extends JPanel implements Cycle {
 
         return new Color(backgroundRgb[0], backgroundRgb[1], backgroundRgb[2]);
     }
+
+    public void setResolution(Dimension resolution) { this.resolution = resolution; }
 }
