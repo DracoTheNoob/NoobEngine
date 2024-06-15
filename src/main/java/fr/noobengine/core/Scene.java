@@ -51,6 +51,12 @@ public class Scene implements Cycle {
         this.spritesToInitialize.add(sprite.getId());
     }
 
+    public void addSprites(Sprite... sprites) {
+        for(Sprite sprite : sprites) {
+            this.addSprite(sprite);
+        }
+    }
+
     public void remove(UUID spriteId) {
         for(Sprite sprite : this.sprites) {
             if(sprite.getId() == spriteId) {

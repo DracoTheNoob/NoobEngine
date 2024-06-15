@@ -30,7 +30,7 @@ public class Frame implements Cycle {
         this.engine = engine;
         this.configuration = configuration;
         this.frame = new JFrame();
-        this.panel = new Panel(engine, configuration.getJson("panel"), SCREEN_SIZE);
+        this.panel = new Panel(engine, configuration.getJson("panel"), List.of((long)SCREEN_SIZE.width, (long)SCREEN_SIZE.height));
     }
 
     @Override

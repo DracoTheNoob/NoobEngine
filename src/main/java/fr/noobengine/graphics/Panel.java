@@ -27,11 +27,12 @@ public class Panel extends JPanel implements Cycle {
     private Color background;
     private Color offsetColor;
 
-    public Panel(Engine engine, Json configuration, Dimension resolution) {
+    public Panel(Engine engine, Json configuration, List<Long> defaultResolution) {
         this.engine = engine;
         this.configuration = configuration;
         this.textures = new HashMap<>();
-        this.resolution = resolution;
+        int[] resolution = configuration.getList("resolution", Long.class, defaultResolution).stream().mapToInt(Long::intValue).toArray();
+        this.resolution = new Dimension(resolution[0], resolution[1]);
     }
 
     @Override
@@ -66,14 +67,7 @@ public class Panel extends JPanel implements Cycle {
         g.fillRect(0, 0, width, height);
 
         for(Sprite sprite : this.engine.getCurrentScene().getSprites()) {
-            BufferedImage image = textures.get(sprite.getTexture());
-
-            int w = (int)(image.getWidth() * sprite.getScale().getX());
-            int h = (int)(image.getHeight() * sprite.getScale().getY());
-            int x = resolution.width/2 + (int)(sprite.getLocation().getX() - w/2);
-            int y = resolution.height/2 - (int)(sprite.getLocation().getY() + h/2);
-
-            g.drawImage(image, x, y, w, h, null);
+            sprite.render(g, textures.get(sprite.getTexture()), resolution);
         }
 
         width = getWidth();
