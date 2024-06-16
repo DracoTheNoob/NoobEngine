@@ -25,19 +25,19 @@ public class Right {
         double b2 = other.b;
         double c2 = other.c;
 
-        if(a1 == a2 && b1 == b2) {
+        if((a1 == 0 && a2 == 0) || (b1 == 0 && b2 == 0) || b2 == (b1 * a2) / a1) {
             return null;
         }
 
-        double y = (-(a1*c2)/a2 + c1) / (-b1 + (a1*b2)/a2);
-        double x = (-b1 * y - c1) / a1;
+        double x = (b1*c2 - b2*c1) / (a1*b2 - a2*b1);
+        double y = (c1*a2 - c2*a1) / (a1*b2 - a2*b1);
 
         return new Vector(x, y);
     }
 
     @Override
     public String toString() {
-        return String.format("%f*x + %f*y + %f = 0", a, b, c);
+        return (a == 0 ? "" : a + "x" + (b > 0 ? "+" : "")) + (b == 0 ? "" : b + "y" + (c > 0 ? "+" : "")) + (c == 0 ?  "" : c) + " = 0";
     }
 
     public double getA() { return a; }

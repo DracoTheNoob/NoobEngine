@@ -43,6 +43,10 @@ public class Segment {
         return this.getCollidingPoint(other) != null;
     }
 
+    public Segment translate(Vector translation) {
+        return new Segment(start.translate(translation), end.translate(translation));
+    }
+
     public Vector getStart() { return start; }
     public Vector getEnd() { return end; }
 

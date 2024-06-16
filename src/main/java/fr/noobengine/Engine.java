@@ -82,7 +82,7 @@ public class Engine implements Cycle, Runnable {
     public EventManager getEventManager() { return eventManager; }
     public Scene getCurrentScene() { return currentScene; }
 
-    public int getDeltaTime() { return timeManager.getDelta(); }
+    public double getDeltaTime() { return timeManager.getDelta(); }
 
     public void setRunning(boolean running) { this.running = running; }
     public void setScene(Scene scene) {

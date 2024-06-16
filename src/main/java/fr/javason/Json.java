@@ -5,9 +5,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Json {
@@ -115,7 +117,7 @@ public class Json {
 
                 for(int i = 0; i < list.size(); i++) {
                     if(!dataType.isInstance(list.get(i))) {
-                        throw new RuntimeException("Element n° " + i + "(" + list.get(i) + ") datatype is invalid :" + dataType.getName() + " expected ");
+                        throw new RuntimeException("Element n°" + i + " (" + list.get(i) + ") datatype is invalid : " + dataType.getName() + " expected ");
                     }
                 }
 
@@ -145,6 +147,49 @@ public class Json {
         } catch(NullPointerException ignored) {
             return ifNull;
         }
+    }
+
+    public Object[] getArray(String key, Object[] ifNull) { return getList(key, Object.class, Arrays.asList(ifNull)).toArray(); }
+    public Object[] getArray(String key) { return getList(key, Object.class, null).toArray(); }
+
+    public String[] getStringArray(String key) { return (String[]) getArray(key); }
+    public int[] getIntArray(String key) { return getList(key, Long.class).stream().mapToInt(Long::intValue).toArray(); }
+    public long[] getLongArray(String key) { return getList(key, Long.class).stream().mapToLong(l -> l).toArray(); }
+    public double[] getDoubleArray(String key) { return getList(key, Long.class).stream().mapToDouble(l -> l).toArray(); }
+
+    public String[] getStringArray(String key, String[] ifNull) { return (String[]) getArray(key, ifNull); }
+    public int[] getIntArray(String key, Integer[] ifNull) { return getList(key, Integer.class, Arrays.asList(ifNull)).stream().mapToInt(o -> o).toArray(); }
+    public long[] getLongArray(String key, Long[] ifNull) { return getList(key, Long.class, Arrays.asList(ifNull)).stream().mapToLong(o -> o).toArray(); }
+    public double[] getDoubleArray(String key, Double[] ifNull) { return getList(key, Double.class, Arrays.asList(ifNull)).stream().mapToDouble(o -> o).toArray(); }
+
+    public Color getColor(String key, Color ifNull) {
+        long[] rgb = getLongArray(key, new Long[]{(long) ifNull.getRed(), (long) ifNull.getGreen(), (long) ifNull.getBlue()});
+
+        if(rgb == null) {
+            return ifNull;
+        }
+
+        if(rgb.length == 3) {
+            return new Color((int) rgb[0], (int) rgb[1], (int) rgb[2], 255);
+        } else if(rgb.length == 4) {
+            return new Color((int) rgb[0], (int) rgb[1], (int) rgb[2], (int) rgb[3]);
+        }
+
+        return ifNull;
+    }
+
+    public Dimension getDimension(String key, Dimension ifNull) {
+        long[] xy = getLongArray(key, new Long[] {(long) ifNull.width, (long) ifNull.height});
+
+        if(xy == null) {
+            return ifNull;
+        }
+
+        if(xy.length == 2) {
+            return new Dimension((int) xy[0], (int) xy[1]);
+        }
+
+        return ifNull;
     }
 
     public Json getJson(String key, Json ifNull) {

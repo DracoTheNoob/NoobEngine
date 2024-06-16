@@ -21,22 +21,20 @@ public class Polygon {
         this.segments[0] = new Segment(points[points.length-1], points[0]);
     }
 
+    private Polygon(Vector[] points, Segment[] segments) {
+        this.points = points;
+        this.segments = segments;
+    }
+
     public boolean contains(Vector point) {
-        System.out.println(point + " not in " + Arrays.toString(this.points));
+        Segment rayCast = new Segment(point, point.translate(1000, 0));
         int counter = 0;
 
         for(Segment segment : this.segments) {
-            Segment rayCast = new Segment(point, point.fromTranslation(1000, 0));
-            System.out.print(rayCast + " " + segment);
-
-            if(segment.intersects(rayCast)) {
+            if(segment.getCollidingPoint(rayCast) != null) {
                 counter++;
-            } else {
-                System.out.println(" not crossing");
             }
         }
-
-        System.out.println(counter);
 
         return counter % 2 == 1;
     }
@@ -53,6 +51,23 @@ public class Polygon {
         return this.contains(other.points[0]) || other.contains(this.points[0]);
     }
 
+    public Polygon translate(Vector translation) {
+        Vector[] points = new Vector[this.points.length];
+        Segment[] segments = new Segment[this.segments.length];
+
+        for(int i = 0; i < points.length; i++) {
+            points[i] = this.points[i].translate(translation);
+            segments[i] = this.segments[i].translate(translation);
+        }
+
+        return new Polygon(points, segments);
+    }
+
     public Vector[] getPoints() { return points; }
     public Segment[] getSegments() { return segments; }
+
+    @Override
+    public String toString() {
+        return "Polygon[points=" + Arrays.toString(this.points) + "]";
+    }
 }

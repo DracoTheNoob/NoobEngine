@@ -25,15 +25,15 @@ public class PolygonSprite extends Sprite {
 
     @Override
     public void render(Graphics2D g, BufferedImage texture, Dimension screen) {
-        Vector[] points = this.collision.getPoints();
+        Vector[] points = this.effectiveCollision.getPoints();
 
         int nPoints = points.length;
         int[] xPoints = new int[nPoints];
         int[] yPoints = new int[nPoints];
 
         for(int i = 0; i < nPoints; i++) {
-            xPoints[i] = (int)((points[i].getX() + this.location.getX()) * 20 + screen.width/2);
-            yPoints[i] = (int)(-(points[i].getY() + this.location.getY()) * 20 + screen.width/2);
+            xPoints[i] = (int)((points[i].getX()) + screen.width/2);
+            yPoints[i] = (int)(-(points[i].getY()) + screen.width/2);
         }
 
         Polygon polygon = new Polygon(xPoints, yPoints, nPoints);

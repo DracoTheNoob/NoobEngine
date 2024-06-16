@@ -31,11 +31,11 @@ public class Vector {
         this.y += vector.y;
     }
 
-    public Vector fromTranslation(double x, double y) {
+    public Vector translate(double x, double y) {
         return new Vector(this.x + x, this.y + y);
     }
 
-    public Vector fromTranslation(Vector vector) {
+    public Vector translate(Vector vector) {
         return new Vector(this.x + vector.x, this.y + vector.y);
     }
 

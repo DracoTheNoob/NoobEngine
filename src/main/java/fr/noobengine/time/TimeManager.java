@@ -10,7 +10,7 @@ public class TimeManager {
 
     private int frames;
     private int fps;
-    private int delta;
+    private double delta;
 
     private long lastFrameMeasure;
     private long lastUpdate;
@@ -50,12 +50,12 @@ public class TimeManager {
     }
 
     public void measureDelta() {
-        this.delta = (int)(lastFrameUpdate - secondLastFrameUpdate);
+        this.delta = (double)((lastFrameUpdate - secondLastFrameUpdate) * maxFps / 1000);
         secondLastFrameUpdate = lastFrameUpdate;
         lastFrameUpdate = System.currentTimeMillis();
     }
 
     public int getMaxFps() { return maxFps; }
     public int getFps() { return fps; }
-    public int getDelta() { return delta; }
+    public double getDelta() { return delta; }
 }

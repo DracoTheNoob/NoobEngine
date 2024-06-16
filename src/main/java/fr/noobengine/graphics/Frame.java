@@ -14,8 +14,8 @@ public class Frame implements Cycle {
     private static final String DEFAULT_TITLE = String.format("NoobEngine Application V-%s", Frame.class.getPackage().getImplementationVersion());
 
     private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
-    private static final List<Long> DEFAULT_INITIAL_SIZE = List.of((long)(SCREEN_SIZE.getWidth() / 2), (long)(SCREEN_SIZE.getHeight() / 2));
-    private static final List<Long> DEFAULT_MINIMUM_SIZE = List.of((long)(SCREEN_SIZE.getWidth() / 3), (long)(SCREEN_SIZE.getHeight() / 3));
+    private static final Dimension DEFAULT_INITIAL_SIZE = new Dimension((int)(SCREEN_SIZE.getWidth() / 2), (int)(SCREEN_SIZE.getHeight() / 2));
+    private static final Dimension DEFAULT_MINIMUM_SIZE = new Dimension((int)(SCREEN_SIZE.getWidth() / 3), (int)(SCREEN_SIZE.getHeight() / 3));
 
     private static final boolean DEFAULT_IS_VISIBLE = true;
     private static final boolean DEFAULT_IS_RESIZABLE = true;
@@ -26,22 +26,23 @@ public class Frame implements Cycle {
     private final JFrame frame;
     private final Panel panel;
 
+    private boolean fullscreen;
+    private final GraphicsDevice device;
+
     public Frame(Engine engine, Json configuration) {
         this.engine = engine;
         this.configuration = configuration;
         this.frame = new JFrame();
-        this.panel = new Panel(engine, configuration.getJson("panel"), List.of((long)SCREEN_SIZE.width, (long)SCREEN_SIZE.height));
+        this.panel = new Panel(engine, configuration.getJson("panel"), SCREEN_SIZE);
+        this.device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     }
 
     @Override
     public void initialize() {
         this.frame.setTitle(configuration.getString("title", DEFAULT_TITLE));
 
-        int[] initialSize = configuration.getList("size.initial", Long.class, DEFAULT_INITIAL_SIZE).stream().mapToInt(Long::intValue).toArray();
-        this.frame.setSize(initialSize[0], initialSize[1]);
-
-        int[] minimumSize = configuration.getList("size.minimum", Long.class, DEFAULT_MINIMUM_SIZE).stream().mapToInt(Long::intValue).toArray();
-        this.frame.setMinimumSize(new Dimension(minimumSize[0], minimumSize[1]));
+        this.frame.setSize(configuration.getDimension("size.initial", DEFAULT_INITIAL_SIZE));
+        this.frame.setMinimumSize(configuration.getDimension("size.minimum", DEFAULT_MINIMUM_SIZE));
 
         this.frame.setLocationRelativeTo(null);
 
@@ -59,10 +60,7 @@ public class Frame implements Cycle {
         this.frame.addMouseMotionListener(input);
         this.frame.addMouseWheelListener(input);
 
-        if(configuration.getBoolean("fullscreen", false)) {
-            this.setFullScreen(true);
-        }
-
+        this.setFullScreen(configuration.getBoolean("is_fullscreen", false));
         this.frame.setVisible(configuration.getBoolean("is_visible", DEFAULT_IS_VISIBLE));
     }
 
@@ -78,13 +76,14 @@ public class Frame implements Cycle {
     }
 
     public void setFullScreen(boolean fullScreen) {
-        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice device = env.getDefaultScreenDevice();
-
         if(fullScreen) {
             device.setFullScreenWindow(this.frame);
         } else {
             device.setFullScreenWindow(null);
         }
+
+        this.fullscreen = fullScreen;
     }
+
+    public boolean isFullscreen() { return fullscreen; }
 }

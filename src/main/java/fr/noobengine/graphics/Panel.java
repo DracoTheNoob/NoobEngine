@@ -12,33 +12,32 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 public class Panel extends JPanel implements Cycle {
-    private static final List<Long> DEFAULT_COLOR_RGB = List.of(30L, 30L, 30L);
-    private static final List<Long> DEFAULT_OFFSET_COLOR_RGB = List.of(5L, 5L, 5L);
+    private static final Color DEFAULT_BACKGROUND_COLOR = new Color(32, 32, 32);
+    private static final Color DEFAULT_OFFSET_COLOR = new Color(10, 10, 10);
 
     private final Engine engine;
     private final Json configuration;
     private final HashMap<String, BufferedImage> textures;
     private Dimension resolution;
+    private double baseRatio;
 
     private Color background;
     private Color offsetColor;
 
-    public Panel(Engine engine, Json configuration, List<Long> defaultResolution) {
+    public Panel(Engine engine, Json configuration, Dimension defaultResolution) {
         this.engine = engine;
         this.configuration = configuration;
         this.textures = new HashMap<>();
-        int[] resolution = configuration.getList("resolution", Long.class, defaultResolution).stream().mapToInt(Long::intValue).toArray();
-        this.resolution = new Dimension(resolution[0], resolution[1]);
+        this.setResolution(configuration.getDimension("resolution", defaultResolution));
     }
 
     @Override
     public void initialize() {
-        this.background = loadColor("background", DEFAULT_COLOR_RGB);
-        this.offsetColor = loadColor("offset", DEFAULT_OFFSET_COLOR_RGB);
+        this.background = configuration.getColor("background", DEFAULT_BACKGROUND_COLOR);
+        this.offsetColor = configuration.getColor("offset", DEFAULT_OFFSET_COLOR);
 
         this.loadTextures(engine.getFiles().get("src/textures/"));
     }
@@ -52,8 +51,6 @@ public class Panel extends JPanel implements Cycle {
     public void close() {
 
     }
-
-    float baseRatio = 16f / 9f;
 
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -76,7 +73,7 @@ public class Panel extends JPanel implements Cycle {
         if((double)width/height == baseRatio) {
             graphics.drawImage(render, 0, 0, width, height, null);
         } else if((double)width / height > baseRatio) {
-            int offset = width - height * 16/9;
+            int offset = (int)(width - height * (16f/9));
 
             // TODO : can be optimized
             graphics.setColor(offsetColor);
@@ -113,15 +110,8 @@ public class Panel extends JPanel implements Cycle {
         }
     }
 
-    private Color loadColor(String key, List<Long> defaultRgb) {
-        int[] backgroundRgb = configuration.getList("colors." + key, Long.class, defaultRgb).stream().mapToInt(Long::intValue).toArray();
-
-        if(backgroundRgb.length == 4) {
-            return new Color(backgroundRgb[0], backgroundRgb[1], backgroundRgb[2], backgroundRgb[3]);
-        }
-
-        return new Color(backgroundRgb[0], backgroundRgb[1], backgroundRgb[2]);
+    public void setResolution(Dimension resolution) {
+        this.resolution = resolution;
+        this.baseRatio = (double)resolution.width / resolution.height;
     }
-
-    public void setResolution(Dimension resolution) { this.resolution = resolution; }
 }

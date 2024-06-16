@@ -18,7 +18,8 @@ public class Sprite implements Cycle {
     protected Vector scale;
     protected String texture;
     protected final List<Script> scripts;
-    protected final Collision collision;
+    protected Collision baseCollision;
+    protected Collision effectiveCollision;
 
     public Sprite(Engine engine, Scene scene, Vector location, Vector scale, String texture, Collision collision) {
         this.engine = engine;
@@ -28,7 +29,8 @@ public class Sprite implements Cycle {
         this.scale = scale;
         this.texture = texture;
         this.scripts = new ArrayList<>();
-        this.collision = collision;
+        this.baseCollision = collision;
+        this.updateEffectiveCollision();
     }
 
     @Override
@@ -38,6 +40,7 @@ public class Sprite implements Cycle {
 
     @Override
     public final void update() {
+        this.updateEffectiveCollision();
         this.scripts.forEach(Script::update);
     }
 
@@ -67,11 +70,7 @@ public class Sprite implements Cycle {
     }
 
     public final boolean collides(Sprite sprite) {
-        return this.collides(sprite.collision);
-    }
-
-    public final boolean collides(Collision collision) {
-        return this.collision.isColliding(collision);
+        return this.effectiveCollision.isColliding(sprite.effectiveCollision);
     }
 
     public void render(Graphics2D g, BufferedImage texture, Dimension screen) {
@@ -87,10 +86,15 @@ public class Sprite implements Cycle {
         g.drawImage(texture, x, y, w, h, null);
     }
 
+    public void updateEffectiveCollision() {
+        this.effectiveCollision = this.baseCollision.translate(this.location);
+    }
+
     public final UUID getId() { return id; }
     public final Vector getLocation() { return location; }
     public final Vector getScale() { return scale; }
     public final String getTexture() { return texture; }
+    public final Collision getEffectiveCollision() { return effectiveCollision; }
 
     public final void setLocation(Vector location) { this.location = location; }
     public final void setScale(Vector scale) { this.scale = scale; }
@@ -105,4 +109,6 @@ public class Sprite implements Cycle {
     public final void addScripts(List<Script> scripts) {
         this.scripts.addAll(scripts);
     }
+
+    public final Engine getEngine() { return engine; }
 }
